@@ -23,8 +23,8 @@ async function main() {
     await Favourite.collection.drop().catch(err => console.log('Favourite collection not found'));
     await User.create(users);
     await Movie.create(movies);
-    await Review.create();
-    await Favourite.create();
+    await Review.create(reviews);
+    await Favourite.create(favourites);
     console.log('Database initialised');
     console.log(`${users.length} users loaded`);
     console.log(`${movies.length} movies loaded`);

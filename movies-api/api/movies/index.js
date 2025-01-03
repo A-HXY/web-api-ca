@@ -3,7 +3,6 @@ import asyncHandler from 'express-async-handler';
 import express from 'express';
 import {getUpcomingMovies} from '../tmdb-api';
 import {getGenres } from '../tmdb-api';
-import reviewModel from './reviewModel';
   
 const router = express.Router();
 
@@ -62,25 +61,6 @@ router.get('/search', asyncHandler(async (req, res) => {
 
     const movies = await movieModel.find(filter);
     res.status(200).json(movies);
-}));
-
-// Get Reviews
-router.get('/:id/reviews', asyncHandler(async (req, res) => {
-    const reviews = await reviewModel.find({ movieId: req.params.id });
-    res.status(200).json(reviews);
-}));
-
-// Add Reviews
-router.post('/:id/reviews', asyncHandler(async (req, res) => {
-    const { userId, content, rating } = req.body;
-    const review = new reviewModel({
-        movieId: req.params.id,
-        userId,
-        content,
-        rating,
-    });
-    await review.save();
-    res.status(201).json(review);
 }));
 
 export default router;

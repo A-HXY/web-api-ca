@@ -33,4 +33,18 @@ router.post('/', asyncHandler(async (req, res) => {
     }
   }));
   
+// Delete favourite movies
+router.delete('/:userId/:movieId', asyncHandler(async (req, res) => {
+    const { userId, movieId } = req.params;
+    try {
+      const deletedFavourite = await Favourite.findOneAndDelete({ userId, movieId });
+      if (!deletedFavourite) {
+        return res.status(404).json({ message: 'Favourite movie not found' });
+      }
+      res.status(200).json({ message: 'Favourite movie deleted', favourite: deletedFavourite });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to delete favourite movie', error: error.message });
+    }
+  }));
+
 module.exports = router;  

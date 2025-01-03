@@ -3,7 +3,6 @@ dotenv.config();
 import mongoose from 'mongoose';
 import users from './users';
 import movies from './movies';
-import reviews from './reviews';
 import favourites from './favourites';
 import User from '../api/users/userModel';
 import Movie from '../api/movies/movieModel';
@@ -23,12 +22,11 @@ async function main() {
     await Favourite.collection.drop().catch(err => console.log('Favourite collection not found'));
     await User.create(users);
     await Movie.create(movies);
-    await Review.create(reviews);
+    await Review.create();
     await Favourite.create(favourites);
     console.log('Database initialised');
     console.log(`${users.length} users loaded`);
     console.log(`${movies.length} movies loaded`);
-    console.log(`${reviews.length} reviews loaded`);
     console.log(`${favourites.length} favourites loaded`);
     await mongoose.disconnect();
 }

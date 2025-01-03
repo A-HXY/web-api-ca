@@ -1,7 +1,6 @@
-import favouriteModel from './favouriteModel';
+import Favourite from './favouriteModel';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
-import {getFavourites} from '../tmdb-api';
 
 const router = express.Router();
 

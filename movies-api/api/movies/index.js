@@ -73,5 +73,16 @@ router.get('/movies/search/:title', asyncHandler(async (req, res) => {
       res.status(500).json({ message: 'Failed to search movies by title', error: error.message });
     }
   }));
-  
+
+  //Fetch movies by genre
+  router.get('/movies/genre/:genreId', asyncHandler(async (req, res) => {
+    const { genreId } = req.params;
+    try {
+      const movies = await getMoviesByGenre(genreId); 
+      res.status(200).json(movies);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch movies by genre', error: error.message });
+    }
+  }));
+    
 export default router;

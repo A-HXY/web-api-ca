@@ -4,6 +4,7 @@ import express from 'express';
 import {getUpcomingMovies} from '../tmdb-api';
 import {getGenres} from '../tmdb-api';
 import {getPopularMovies} from '../tmdb-api';
+import { getNowPlaying } from '../tmdb-api';
 
 const router = express.Router();
 
@@ -39,27 +40,34 @@ router.get('/:id', asyncHandler(async (req, res) => {
     }
 }));
 
+//Get Upcoming movies
 router.get('/tmdb/upcoming', asyncHandler(async (req, res) => {
     const upcomingMovies = await getUpcomingMovies();
     res.status(200).json(upcomingMovies);
 }));
 
+//Get movies' genres
 router.get('/tmdb/genres', asyncHandler(async (req, res) => {
     const genres = await getGenres();
     res.status(200).json(genres);
 }));
 
+//Get NowPlaying movies
+router.get('/tmdb/now_playing', asyncHandler(async (req, res) => {
+    const nowPlayingMovies = await getNowPlaying();  
+    res.status(200).json(nowPlayingMovies); 
+}));
+
+//Search movies
 router.get('/search', asyncHandler(async (req, res) => {
     const { query, genre } = req.query;
     const filter = {};
-
     if (query) {
         filter.title = { $regex: query, $options: 'i' }; 
     }
     if (genre) {
         filter.genre_ids = genre; 
     }
-
     const movies = await movieModel.find(filter);
     res.status(200).json(movies);
 }));
@@ -75,7 +83,7 @@ router.get('/movies/search/:title', asyncHandler(async (req, res) => {
     }
   }));
 
-//Fetch movies by genre
+//Get movies by genre
 router.get('/movies/genre/:genreId', asyncHandler(async (req, res) => {
     const { genreId } = req.params;
     try {
@@ -94,6 +102,13 @@ router.get('/movies/popular', asyncHandler(async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch popular movies', error: error.message });
     }
-  }));  
-    
+  }));
+
+//Get movie reviews
+router.get('/reviews/:movieId', asyncHandler(async (req, res) => {
+  const movieId = req.params.movieId;
+  const reviews = await getReviews(movieId);  
+  res.status(200).json(reviews);
+}));
+
 export default router;

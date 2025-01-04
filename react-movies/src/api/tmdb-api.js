@@ -100,7 +100,7 @@ export const getUpcomingMovies = (page) => {
 
 export const getPopularMovies = (page) => {
   return fetch(
-    `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=en-US&page=${page}`
+    `http://localhost:8080/api/movies/tmdb/popular?page=${page}`
   ).then((response) => {
     if (!response.ok) {
       return response.json().then((error) => {
@@ -117,7 +117,7 @@ export const getPopularMovies = (page) => {
 
 export const getNowPlaying = (page = 1) => {
   return fetch(
-    `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_TMDB_KEY}&language=en-US&page=${page}`
+    `http://localhost:8080/api/movies/tmdb/now_playing?page=${page}`
   ).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {

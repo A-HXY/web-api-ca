@@ -22,7 +22,7 @@ app.use('/api/movies', moviesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/favourites',favouritesRouter);
 app.use('/api/watchlist', watchlistRouter);
-// app.use('/api/movies', authenticate, moviesRouter);
+app.use('/api/movies', authenticate, moviesRouter);
 app.use(defaultErrHandler);
 
 app.listen(port, () => {

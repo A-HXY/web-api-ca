@@ -1,8 +1,7 @@
 export const getMovies = (page = 1) => {
   return fetch(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_TMDB_KEY}&language=en-US&include_adult=false&include_video=false&page=${page}`
-  )
-    .then((response) => {
+    `http://localhost:8080/api/movies?page=${page}`
+  ).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
           throw new Error(error.status_message || "Something went wrong");
@@ -70,11 +69,8 @@ export const getMovieImages = ({ queryKey }) => {
  });
 };
 
-export const getMovieReviews = ({ queryKey }) => {
-  const [, idPart] = queryKey;
-  const { id } = idPart;
-  return fetch(
-    `https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${process.env.REACT_APP_TMDB_KEY}`
+export const getMovieReviews = (movieId) => {
+  return fetch(`http://localhost:8080/api/reviews/${movieId}`
   ).then( (response) => {
     if (!response.ok) {
       return response.json().then((error) => {
@@ -124,8 +120,7 @@ export const getPopularMovies = (page) => {
 export const getNowPlaying = (page = 1) => {
   return fetch(
     `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.REACT_APP_TMDB_KEY}&language=en-US&page=${page}`
-  )
-    .then((response) => {
+  ).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
           throw new Error(error.status_message || "Something went wrong");
@@ -242,11 +237,10 @@ export const createSession = (requestToken) => {
     });
 };
 
-export const getFavouriteMovies = (sessionId) => {
+export const getFavouriteMovies = (userId) => {
   return fetch(
-    `https://api.themoviedb.org/3/account/me/favorite/movies?api_key=${process.env.REACT_APP_TMDB_KEY}&session_id=${sessionId}`
-  )
-    .then((response) => {
+    `http://localhost:8080/api/favourites/${userId}`
+     ).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
           throw new Error(error.status_message || "Something went wrong");
@@ -259,11 +253,10 @@ export const getFavouriteMovies = (sessionId) => {
     });
 };
 
-export const getWatchlistMovies = (sessionId) => {
+export const getWatchlistMovies = (userId) => {
   return fetch(
-    `https://api.themoviedb.org/3/account/{account_id}/watchlist/movies?api_key=${process.env.REACT_APP_TMDB_KEY}&session_id=${sessionId}`
-  )
-    .then((response) => {
+    `http://localhost:8080/api/watchlist/${userId}`
+    ).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
           throw new Error(error.status_message || "Something went wrong");

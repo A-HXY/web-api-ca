@@ -44,11 +44,14 @@ export const getReviews = async (movieId) => {
         const response = await fetch(
             `https://api.themoviedb.org/3/movie/${movieId}/reviews?api_key=${process.env.TMDB_KEY}&language=en-US&page=1`
         );
-        if (!response.ok) {
-            throw new Error((await response.json()).message);
+        if (!response.ok) { 
+            const errorData = await response.json();
+            console.error(`TMDB API Error: ${errorData.status_message}`);
+            throw new Error(errorData.status_message || "Failed to fetch reviews");
         }
         return await response.json();
     } catch (error) {
+        console.error(`Error in getReviews: ${error.message}`);
         throw error;
     }
 };

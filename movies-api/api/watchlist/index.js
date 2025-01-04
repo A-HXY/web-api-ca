@@ -51,4 +51,4 @@ router.delete('/:userId/:movieId', asyncHandler(async (req, res) => {
   }
 }));
 
-module.exports = router;
+export default router;

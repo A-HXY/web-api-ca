@@ -1,49 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { getRequestToken, createSession } from "../../api/tmdb-api";
+import React, { useState } from "react";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-    const [requestToken, setRequestToken] = useState('');
-    const [sessionId, setSessionId] = useState('');
+    const [credentials, setCredentials] = useState({ username: "", password: "" });
+    const [errorMessage, setErrorMessage] = useState("");
     const [isAuthenticated, setIsAuthenticated] = useState(null);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('request_token');
-        if (token) {
-            createSession(token)
-                .then((session) => {
-                    setSessionId(session);
-                    sessionStorage.setItem('sessionId', session);
-                    setIsAuthenticated(true);
-                    navigate("/");
-                    window.location.reload();
-                   
-                })
-                .catch((error) => {
-                    setIsAuthenticated(false);
-                    console.error("Error creating session:", error);
-                    alert("Fail create session")
-                });
-        }
-    }, []);
-
-    const handleGetRequestToken = async () => {
-        try {
-            const token = await getRequestToken();
-            setRequestToken(token);
-            alert("Request token generated. Please authorize the app.");
-            window.location.href = `https://www.themoviedb.org/authenticate/${token}?redirect_to=${encodeURIComponent(window.location.href)}`;
-        } catch (error) {
-            console.error("Error generating request token:", error);
-        }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setCredentials({ ...credentials, [name]: value });
     };
+
+    const handleLogin = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/users?action=login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentials),
+          });
+    
+          if (response.ok) {
+            const data = await response.json();
+            sessionStorage.setItem("sessionId", data.token); 
+            setIsAuthenticated(true);
+            setErrorMessage("");
+            navigate("/"); 
+          } else {
+            const errorData = await response.json();
+            setErrorMessage(errorData.msg || "Login failed. Please try again.");
+            setIsAuthenticated(false);
+          }
+        } catch (error) {
+          console.error("Error logging in:", error);
+          setErrorMessage("An error occurred. Please try again.");
+        }
+      };
 
 
   return (
@@ -56,24 +56,43 @@ const LoginForm = () => {
       }}
     >
       <Typography variant="h4" gutterBottom>
-                TMDB Login
-            </Typography>
-            {!isAuthenticated ? (
-                <>
-                    <Button 
-                        onClick={handleGetRequestToken} 
-                        variant="contained" 
-                        color="primary"
-                        style={{ margin: '10px', padding: '10px 20px' }}
-                    >
-                        Get Authorization
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <Alert severity="success">Session created successfully!</Alert>
-                </>
-            )}
+        Login
+      </Typography>
+      <TextField
+        label="Username"
+        name="username"
+        variant="outlined"
+        value={credentials.username}
+        onChange={handleInputChange}
+        style={{ marginBottom: "20px", width: "300px" }}
+      />
+      <TextField
+        label="Password"
+        name="password"
+        type="password"
+        variant="outlined"
+        value={credentials.password}
+        onChange={handleInputChange}
+        style={{ marginBottom: "20px", width: "300px" }}
+      />
+      <Button
+        onClick={handleLogin}
+        variant="contained"
+        color="primary"
+        style={{ padding: "10px 20px" }}
+      >
+        Login
+      </Button>
+      {errorMessage && (
+        <Alert severity="error" style={{ marginTop: "20px", width: "300px" }}>
+          {errorMessage}
+        </Alert>
+      )}
+      {isAuthenticated && (
+        <Alert severity="success" style={{ marginTop: "20px", width: "300px" }}>
+          Logged in successfully!
+        </Alert>
+      )}
     </Container>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import SignupForm from "../components/signupForm"; 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
     const [errorMessage, setErrorMessage] = useState(""); 
     const [successMessage, setSuccessMessage] = useState(""); 
-    const history = useHistory(); 
+    const navigate = useNavigate();  
 
     const handleSignup = async (credentials) => {
         try {

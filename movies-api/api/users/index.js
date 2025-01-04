@@ -24,8 +24,10 @@ router.post('/', asyncHandler(async (req, res) => {
         }
         if (req.query.action === 'register') {
             await registerUser(req, res);
-        } else {
+        } else if (req.query.action === 'login') {
             await authenticateUser(req, res);
+        } else {
+            res.status(400).json({ success: false, msg: 'Invalid action. Use ?action=register or ?action=login.' });    
         }
     } catch (error) {
         // Log the error and return a generic error message
@@ -54,7 +56,11 @@ router.put('/:id', async (req, res) => {
 });
 
 async function registerUser(req, res) {
-    // Add input validation logic here
+    const existingUser = await User.findByUserName(req.body.username);
+    if (existingUser) {
+        return res.status(400).json({ success: false, msg: 'Username is already taken.' });
+    }
+
     await User.create(req.body);
     res.status(201).json({ success: true, msg: 'User successfully created.' });
 }
@@ -74,4 +80,23 @@ async function authenticateUser(req, res) {
     }
 }
 
+// Get current user's profile
+router.get('/profile', asyncHandler(async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ success: false, msg: 'No authorization header provided.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET);
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ success: false, msg: 'User not found.' });
+        }
+        res.status(200).json({ success: true, user: { username: user.username, id: user._id } });
+    } catch (error) {
+        res.status(403).json({ success: false, msg: 'Invalid or expired token.', error: error.message });
+    }
+}));
 export default router;

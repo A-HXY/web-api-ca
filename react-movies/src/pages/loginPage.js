@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import LoginForm from "../components/loginForm"; 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [errorMessage, setErrorMessage] = useState(""); 
-  const history = useHistory(); 
+  const navigate = useNavigate(); 
+
   const handleLogin = async (credentials) => {
     try {
       const response = await fetch("http://localhost:8080/api/users?action=login", {
@@ -18,7 +19,7 @@ const LoginPage = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token); 
-        history.push("/home"); 
+        navigate("/"); 
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.msg || "Login failed. Please try again."); 

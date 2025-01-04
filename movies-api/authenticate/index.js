@@ -1,11 +1,19 @@
 import jwt from 'jsonwebtoken';
 import User from '../api/users/userModel';
 
+const verifyToken = async (token) => {
+  try {
+      return jwt.verify(token, process.env.SECRET);
+  } catch (error) {
+      throw error;
+  }
+};
+
 const authenticate = async (request, response, next) => {
     try { 
         const authHeader = request.headers.authorization;
         if (!authHeader) {
-            return response.status(401).json({ message: "No authorization header provided" });
+            return response.status(401).json({ message: "Authorization header is required" });
           }
 
         const token = authHeader.split(" ")[1];
@@ -13,16 +21,16 @@ const authenticate = async (request, response, next) => {
             return response.status(401).json({ message: "Bearer token not found" });
           }
 
-        const decoded = await jwt.verify(token, process.env.SECRET); 
-        console.log("Decoded JWT:", decoded);
+        const decoded = await verifyToken(token);
+        console.log(`Decoded JWT: User - ${decoded.username}`);
 
-        // Assuming decoded contains a username field
         const user = await User.findByUserName(decoded.username); 
         if (!user) {
             return response.status(404).json({ message: "User not found" });
         }
-        // Optionally attach the user to the request for further use
+
         request.user = user; 
+        console.log("Authenticated user:", user.username);
         next();
     } catch(err) {
         console.error("Authentication Error:", err.message);

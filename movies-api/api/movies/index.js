@@ -63,4 +63,15 @@ router.get('/search', asyncHandler(async (req, res) => {
     res.status(200).json(movies);
 }));
 
+//Search movies by title
+router.get('/movies/search/:title', asyncHandler(async (req, res) => {
+    const { title } = req.params;
+    try {
+      const movies = await searchMoviesByTitle(title); 
+      res.status(200).json(movies);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to search movies by title', error: error.message });
+    }
+  }));
+  
 export default router;

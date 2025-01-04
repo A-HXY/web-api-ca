@@ -98,7 +98,7 @@ export const getUpcomingMovies = (page) => {
   });
 };
 
-export const getPopularMovies = (page) => {
+export const getPopularMovies = (page = 1) => {
   return fetch(
     `http://localhost:8080/api/movies/tmdb/popular?page=${page}`
   ).then((response) => {
@@ -113,7 +113,6 @@ export const getPopularMovies = (page) => {
       throw error;
   });
 };
-
 
 export const getNowPlaying = (page = 1) => {
   return fetch(

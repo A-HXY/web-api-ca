@@ -95,14 +95,11 @@ router.get('/movies/genre/:genreId', asyncHandler(async (req, res) => {
   }));
 
 //Get popular movies
-router.get('/movies/popular', asyncHandler(async (req, res) => {
-    try {
-      const movies = await getPopularMovies(); 
-      res.status(200).json(movies);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch popular movies', error: error.message });
-    }
-  }));
+router.get('/tmdb/popular', asyncHandler(async (req, res) => {
+  const popularMovies = await getPopularMovies();
+  res.status(200).json(popularMovies);
+}));
+
 
 //Get movie reviews
 router.get('/reviews/:movieId', asyncHandler(async (req, res) => {

@@ -8,6 +8,7 @@ import usersRouter from './api/users';
 import moviesRouter from './api/movies';
 import reviewsRouter from './api/reviews';
 import favouritesRouter from './api/favourites';
+import watchlistRouter from './api/watchlist';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/movies', moviesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/favourites',favouritesRouter);
+app.use('/api/watchlist', watchlistRouter);
 app.use('/api/movies', authenticate, moviesRouter);
 app.use(defaultErrHandler);
 

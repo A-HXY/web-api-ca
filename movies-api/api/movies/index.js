@@ -2,8 +2,9 @@ import movieModel from './movieModel';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
 import {getUpcomingMovies} from '../tmdb-api';
-import {getGenres } from '../tmdb-api';
-  
+import {getGenres} from '../tmdb-api';
+import {getPopularMovies} from '../tmdb-api';
+
 const router = express.Router();
 
 router.get('/', asyncHandler(async (req, res) => {
@@ -74,8 +75,8 @@ router.get('/movies/search/:title', asyncHandler(async (req, res) => {
     }
   }));
 
-  //Fetch movies by genre
-  router.get('/movies/genre/:genreId', asyncHandler(async (req, res) => {
+//Fetch movies by genre
+router.get('/movies/genre/:genreId', asyncHandler(async (req, res) => {
     const { genreId } = req.params;
     try {
       const movies = await getMoviesByGenre(genreId); 
@@ -84,5 +85,15 @@ router.get('/movies/search/:title', asyncHandler(async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch movies by genre', error: error.message });
     }
   }));
+
+//Get popular movies
+router.get('/movies/popular', asyncHandler(async (req, res) => {
+    try {
+      const movies = await getPopularMovies(); 
+      res.status(200).json(movies);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch popular movies', error: error.message });
+    }
+  }));  
     
 export default router;

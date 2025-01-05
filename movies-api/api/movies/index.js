@@ -1,38 +1,44 @@
 import movieModel from './movieModel';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
-import {getUpcomingMovies} from '../tmdb-api';
+import {getMovieDetail, getUpcomingMovies} from '../tmdb-api';
+import {getMovies} from '../tmdb-api';
 import {getGenres} from '../tmdb-api';
-import {getPopularMovies} from '../tmdb-api';
-import { getNowPlaying } from '../tmdb-api';
+import {getPopularMovie} from '../tmdb-api';
+import { getNowPlayingMovie } from '../tmdb-api';
 
 const router = express.Router();
 
+// router.get('/', asyncHandler(async (req, res) => {
+//     let { page = 1, limit = 10 } = req.query; // destructure page and limit and set default values
+//     [page, limit] = [+page, +limit]; //trick to convert to numeric (req.query will contain string values)
+
+//     // Parallel execution of counting movies and getting movies using movieModel
+//     const [total_results, results] = await Promise.all([
+//         movieModel.estimatedDocumentCount(),
+//         movieModel.find().limit(limit).skip((page - 1) * limit)
+//     ]);
+//     const total_pages = Math.ceil(total_results / limit); //Calculate total number of pages (= total No Docs/Number of docs per page) 
+
+//     //construct return Object and insert into response object
+//     const returnObject = {
+//         page,
+//         total_pages,
+//         total_results,
+//         results
+//     };
+//     res.status(200).json(returnObject);
+// }));
+
 router.get('/', asyncHandler(async (req, res) => {
-    let { page = 1, limit = 10 } = req.query; // destructure page and limit and set default values
-    [page, limit] = [+page, +limit]; //trick to convert to numeric (req.query will contain string values)
-
-    // Parallel execution of counting movies and getting movies using movieModel
-    const [total_results, results] = await Promise.all([
-        movieModel.estimatedDocumentCount(),
-        movieModel.find().limit(limit).skip((page - 1) * limit)
-    ]);
-    const total_pages = Math.ceil(total_results / limit); //Calculate total number of pages (= total No Docs/Number of docs per page) 
-
-    //construct return Object and insert into response object
-    const returnObject = {
-        page,
-        total_pages,
-        total_results,
-        results
-    };
-    res.status(200).json(returnObject);
+  const movies = await getMovies();
+  res.status(200).json(movies);
 }));
 
 // Get movie details
 router.get('/:id', asyncHandler(async (req, res) => {
-    const id = parseInt(req.params.id);
-    const movie = await movieModel.findByMovieDBId(id);
+    const {id }= req.params;
+    const movie = await getMovieDetail(id);
     if (movie) {
         res.status(200).json(movie);
     } else {
@@ -54,7 +60,7 @@ router.get('/tmdb/genres', asyncHandler(async (req, res) => {
 
 //Get NowPlaying movies
 router.get('/tmdb/now_playing', asyncHandler(async (req, res) => {
-    const nowPlayingMovies = await getNowPlaying();  
+    const nowPlayingMovies = await getNowPlayingMovie();  
     res.status(200).json(nowPlayingMovies); 
 }));
 
@@ -83,20 +89,9 @@ router.get('/movies/search/:title', asyncHandler(async (req, res) => {
     }
   }));
 
-//Get movies by genre
-router.get('/movies/genre/:genreId', asyncHandler(async (req, res) => {
-    const { genreId } = req.params;
-    try {
-      const movies = await getMoviesByGenre(genreId); 
-      res.status(200).json(movies);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch movies by genre', error: error.message });
-    }
-  }));
-
 //Get popular movies
 router.get('/tmdb/popular', asyncHandler(async (req, res) => {
-  const popularMovies = await getPopularMovies();
+  const popularMovies = await getPopularMovie();
   res.status(200).json(popularMovies);
 }));
 

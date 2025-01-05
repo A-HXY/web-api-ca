@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useQuery } from 'react-query';
 import { getMovies } from "../api/tmdb-api";
 import PageTemplate from '../components/templateMovieListPage';
+import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
 import AddToFavoritesIcon from '../components/cardIcons/addToFavorites';
 import Pagination from '@mui/material/Pagination';
@@ -10,9 +10,7 @@ import Box from '@mui/material/Box';
 const HomePage = (props) => {
   const [page, setPage] = useState(1); 
 
-  const { data, error, isLoading, isError } = useQuery(
-    ['discover', page], 
-    () => getMovies(page), {
+  const { data, error, isLoading, isError } = useQuery(['discover', page], () => getMovies(page), {
     keepPreviousData: true, 
   });
 
@@ -30,32 +28,6 @@ const HomePage = (props) => {
   localStorage.setItem('favorites', JSON.stringify(favorites));
 
   const addToFavorites = (movieId) => {
-    const userId = "exampleUserId";
-    fetch('http://localhost:8080/api/favourites', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        movieId,
-        movieTitle: movies.find((movie) => movie.id === movieId).title,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          return response.json().then((error) => {
-            throw new Error(error.message || "Failed to add to favorites");
-          });
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Movie added to favorites', data);
-      })
-      .catch((error) => {
-        console.error('Error adding to favorites:', error.message);
-      });
   };
 
   const handlePageChange = (event, newPage) => {

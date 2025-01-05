@@ -1,61 +1,46 @@
 import Favourite from './favouriteModel';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
-import authenticate from '../../authenticate';
 
 const router = express.Router();
 
 // Get all favourite movies for a specific user
-router.get('/', authenticate, asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    console.log(`Fetching favourites for userId: ${userId}`);
-    try {
-      const favourites = await Favourite.find({ userId });
-      console.log(`Found favourites: ${JSON.stringify(favourites)}`);
+router.get('/:username', asyncHandler(async (req, res) => {
+      const favourites = await Favourite.find(req.params);
       res.status(200).json(favourites);
-    } catch (error) {
-      console.error('Error fetching favourite movies:', error);
-      res.status(500).json({ message: 'Failed to get favourite movies', error: error.message });
-    }
-  }));
+}));
 
 // Add a movie to favourites
-router.post('/', authenticate, asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const { movieId, movieTitle } = req.body;
+router.post('/:username', asyncHandler(async (req, res) => {
+      const { username } = req.params; 
+      const { movieId } = req.body; 
   
-    if (!movieId || !movieTitle) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
+      if (!username || !movieId) {
+         return res.status(400).json({ success: false, msg: 'Username and MovieId are required.' });
+      }
+      const existingFavourite = await Favourite.findOne({ username, movieId });
+      if (existingFavourite) {
+        return res.status(401).json({ success: false, msg: 'It has already been in favourite list.'})
+      }
   
-    try {
-      const existingFavourite = await Favourite.findOne({ userId, movieId });
-        if (existingFavourite) {
-            return res.status(409).json({ message: 'Movie already in favourites' });
-        }
-      const newFavourite = new Favourite({ userId, movieId, movieTitle });
-      await newFavourite.save();
-      res.status(201).json(newFavourite);
-    } catch (error) {
-      console.error('Error adding favourite movie:', error);
-      res.status(500).json({ message: 'Failed to add favourite movie', error: error.message });
-    }
+      await Favourite.create({ username, movieId });
+     res.status(201).json({ success: true, msg: 'Favourite successfully added.' });
   }));
   
 // Delete a movie from favourites
-router.delete('/:movieId', authenticate, asyncHandler(async (req, res) => {
-  const userId = req.user._id;  
-  const { movieId } = req.params;
-    try {
-      const deletedFavourite = await Favourite.findOneAndDelete({ userId, movieId });
-      if (!deletedFavourite) {
-        return res.status(404).json({ message: 'Favourite movie not found' });
+router.delete('/:username', asyncHandler(async (req, res) => {
+      const { username } = req.params;  
+      const { movieId } = req.body;
+
+      if (!username || !movieId) {
+        return res.status(400).json({ success: false, msg: 'UserId and MovieId are required.' });
       }
-      res.status(200).json({ message: 'Favourite movie deleted', favourite: deletedFavourite });
-    } catch (error) {
-      console.error('Error deleting favourite movie:', error);
-      res.status(500).json({ message: 'Failed to delete favourite movie', error: error.message });
-    }
+      const existingFavourite = await Favourite.findOne({ username, movieId });
+      if (!existingFavourite) {
+        return res.status(404).json({ success: false, msg: 'Favourite movie not found' });
+      }
+      await Favourite.findOneAndDelete({ username, movieId });
+      res.status(200).json({ success: true, msg: 'Favourite successfully deleted.' });
   }));
 
 export default router;

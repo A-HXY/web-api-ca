@@ -1,63 +1,49 @@
-import React, { useEffect, useState } from "react";
-import PageTemplate from "../components/templateMovieListPage";
-import Spinner from '../components/spinner'
 import RemoveFromFavorites from "../components/cardIcons/removeFromFavorites";
 import WriteReview from "../components/cardIcons/writeReview";
+import React, { useContext } from "react";
+import PageTemplate from "../components/templateMovieListPage";
+import { MoviesContext } from "../context/moviesContext";
+import { useQueries } from "react-query";
+import { getMovie } from "../api/tmdb-api";
+import Spinner from '../components/spinner'
 
 const FavoriteMoviesPage = () => {
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const {favorites: movieIds } = useContext(MoviesContext);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const sessionId = sessionStorage.getItem("sessionId");
-        const response = await fetch("http://localhost:8080/api/favourites", {
-          headers: {
-            Authorization: `Bearer ${sessionId}`,
-          },
-        });
+  // Create an array of queries and run in parallel.
+  const favoriteMovieQueries = useQueries(
+    movieIds.map((movieId) => {
+      return {
+        queryKey: ["movie", { id: movieId }],
+        queryFn: getMovie,
+      };
+    })
+  );
+  // Check if any of the parallel queries is still loading.
+  const isLoading = favoriteMovieQueries.find((m) => m.isLoading === true);
 
-        if (response.ok) {
-          const data = await response.json();
-          setFavorites(data); 
-        } else {
-          const errorData = await response.json();
-          setError(errorData.message || "Failed to fetch favorite movies.");
-        }
-      } catch (err) {
-        setError("An error occurred. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return <Spinner />;
   }
 
-  if (error) {
-    return <p style={{ color: "red", textAlign: "center" }}>{error}</p>;
-  }
+  const movies = favoriteMovieQueries.map((q) => {
+    q.data.genre_ids = q.data.genres.map(g => g.id)
+    return q.data
+  });
 
-  if (favorites.length === 0) {
-    return <p style={{ textAlign: "center" }}>You have no favorite movies yet!</p>;
-  }
   const toDo = () => true;
 
   return (
     <PageTemplate
       title="Favorite Movies"
-      movies={favorites}
+      movies={movies}
       action={(movie) => {
+        return (
           <>
             <RemoveFromFavorites movie={movie} />
             <WriteReview movie={movie} />
           </>
+        );
       }}
     />
   );

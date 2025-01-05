@@ -2,16 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const FavouriteSchema = new Schema({
-  userId: {
+  username: {
     type: String, 
     required: true,
   },
   movieId: {
     type: String,
-    required: true,
-  },
-  movieTitle: {
-    type: String, 
     required: true,
   },
   createdAt: {

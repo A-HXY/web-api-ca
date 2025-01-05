@@ -10,13 +10,10 @@ import Box from "@mui/material/Box";
 const NowPlayingPage = (props) => {
   const [page, setPage] = useState(1); 
 
-  const { data, error, isLoading, isError } = useQuery(
-    ["nowplaying", page], 
-    () => getNowPlaying(page),
-    {
-      keepPreviousData: true, 
-    }
-  );
+  const { data, error, isLoading, isError } = useQuery(['nowplaying', page], () => getNowPlaying(page), {
+    keepPreviousData: true, 
+  });
+
 
   if (isLoading) {
     return <Spinner />;

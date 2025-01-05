@@ -19,7 +19,7 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("token", data.token); 
+        sessionStorage.setItem("token", data.token); 
         navigate("/"); 
       } else {
         const errorData = await response.json();

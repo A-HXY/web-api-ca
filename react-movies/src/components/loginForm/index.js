@@ -31,6 +31,7 @@ const LoginForm = () => {
           if (response.ok) {
             const data = await response.json();
             sessionStorage.setItem("sessionId", data.token); 
+            sessionStorage.setItem("username", credentials.username);
             setIsAuthenticated(true);
             setErrorMessage("");
             navigate("/"); 

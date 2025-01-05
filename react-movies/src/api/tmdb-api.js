@@ -14,9 +14,9 @@ export const getMovies = (page = 1) => {
     });
 };
 
-export const getMovie = (args) => {
+export const getMovie = ({queryKey}) => {
   //console.log(args)
-  const [, idPart] = args.queryKey;
+  const [, idPart] = queryKey;
   const { id } = idPart;
   return fetch(
     `http://localhost:8080/api/movies/${id}`
@@ -98,7 +98,7 @@ export const getUpcomingMovies = (page) => {
   });
 };
 
-export const getPopularMovies = (page = 1) => {
+export const getPopularMovies = (page) => {
   return fetch(
     `http://localhost:8080/api/movies/tmdb/popular?page=${page}`
   ).then((response) => {
@@ -114,9 +114,9 @@ export const getPopularMovies = (page = 1) => {
   });
 };
 
-export const getNowPlaying = (page = 1) => {
+export const getNowPlaying = (page) => {
   return fetch(
-    `http://localhost:8080/api/movies/tmdb/now_playing?page=${page}`
+    `http://localhost:8080/api/movies/tmdb/now_playing?Page=${page}`
   ).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {

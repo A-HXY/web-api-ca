@@ -266,33 +266,7 @@ export const getWatchlistMovies = (userId) => {
     });
 };
 
-export const toggleFavorite = (sessionId, movieId, isFavorite) => {
-  return fetch(
-    `https://api.themoviedb.org/3/account/{account_id}/favorite?api_key=${process.env.REACT_APP_TMDB_KEY}&session_id=${sessionId}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        media_type: "movie",
-        media_id: movieId,
-        favorite: isFavorite, 
-      }),
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status_code) {
-        throw new Error(data.status_message || "Something went wrong");
-      }
-      return data;
-    })
-    .catch((error) => {
-      console.error("Error toggling favorite:", error);
-      throw error;
-    });
-};
+
 
 export const toggleWatchlist = (sessionId, movieId, isWatchlist) => {
   return fetch(

@@ -16,7 +16,6 @@ import PopularPage from "./pages/popularPage";
 import ActorDetailsPage from './pages/actorDetailsPage';
 import WatchListPage from './pages/watchlistPage';
 import LoginPage from "./pages/loginPage";
-import PrivateRoute from './components/privateRoute'; 
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,16 +35,16 @@ const App = () => {
         <MoviesContextProvider>
           <Routes>
             <Route path="/login" element={<LoginPage/>}/>
-            <Route path="/movies/favorites" element={<PrivateRoute><FavoriteMoviesPage /></PrivateRoute>}/>
-            <Route path="/movies/watchlist" element={<PrivateRoute><WatchListPage /></PrivateRoute>}/>
-            <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>}/>
-            <Route path="/movies/:id" element={<PrivateRoute><MoviePage /></PrivateRoute>}/>
-            <Route path="/movies/upcoming" element={<PrivateRoute><UpcomingPage /></PrivateRoute>}/>
-            <Route path="/movies/nowplaying" element={<PrivateRoute><NowPlayingPage /></PrivateRoute>}/>
-            <Route path="/movies/popular" element={ <PrivateRoute><PopularPage /></PrivateRoute>} />
-            <Route path="/actors/:id" element={ <PrivateRoute><ActorDetailsPage /></PrivateRoute>}/>
-            <Route path="/reviews/:id" element={ <PrivateRoute><MovieReviewPage /></PrivateRoute> } />
-            <Route path="/reviews/form" element={ <PrivateRoute><AddMovieReviewPage /></PrivateRoute> } />
+            <Route path="/movies/favorites" element={<FavoriteMoviesPage />}/>
+            <Route path="/movies/watchlist" element={<WatchListPage />}/>
+            <Route path="/" element={<HomePage />}/>
+            <Route path="/movies/:id" element={<MoviePage />}/>
+            <Route path="/movies/upcoming" element={<UpcomingPage />}/>
+            <Route path="/movies/nowplaying" element={<NowPlayingPage />}/>
+            <Route path="/movies/popular" element={<PopularPage />} />
+            <Route path="/actors/:id" element={<ActorDetailsPage />}/>
+            <Route path="/reviews/:id" element={<MovieReviewPage /> } />
+            <Route path="/reviews/form" element={<AddMovieReviewPage /> } />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </MoviesContextProvider>

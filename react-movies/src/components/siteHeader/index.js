@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -14,14 +14,18 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
-const SiteHeader = ({ history }) => {
+const SiteHeader = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const open = Boolean(anchorEl);
-
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    const sessionId = sessionStorage.getItem("sessionId");
+    setIsLoggedIn(!!sessionId); 
+  }, []);
 
   const menuOptions = [
     { label: "Home", path: "/" },
@@ -29,7 +33,6 @@ const SiteHeader = ({ history }) => {
     { label: "Upcoming", path: "/movies/upcoming" },
     { label: "NowPlaying", path: "/movies/nowplaying" },
     { label: "Popular", path: "/movies/popular" },
-    { label: "Login", path: "/login" },
   ];
 
   const handleMenuSelect = (pageURL) => {
@@ -38,6 +41,12 @@ const SiteHeader = ({ history }) => {
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("sessionId");
+    setIsLoggedIn(false);
+    navigate("/login", { replace: true }); 
   };
 
   return (
@@ -84,6 +93,13 @@ const SiteHeader = ({ history }) => {
                       {opt.label}
                     </MenuItem>
                   ))}
+                  {isLoggedIn ? (
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                ) : (
+                  <MenuItem onClick={() => handleMenuSelect("/login")}>
+                    Login
+                  </MenuItem>
+                )}
                 </Menu>
               </>
             ) : (
@@ -97,8 +113,17 @@ const SiteHeader = ({ history }) => {
                     {opt.label}
                   </Button>
                 ))}
-              </>
-            )}
+              {isLoggedIn ? (
+                <Button color="inherit" onClick={handleLogout}>
+                  Logout
+                </Button>
+              ) : (
+                <Button color="inherit" onClick={() => handleMenuSelect("/login")}>
+                  Login
+                </Button>
+                )}
+                </>
+              )}
         </Toolbar>
       </AppBar>
       <Offset />

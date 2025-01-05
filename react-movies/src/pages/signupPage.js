@@ -21,7 +21,7 @@ const SignupPage = () => {
             setSuccessMessage("Account created successfully! Redirecting to login...");
             setErrorMessage(""); 
             setTimeout(() => {
-              history.push("/login"); 
+              navigate("/login"); 
             }, 2000); 
           } else {
             const errorData = await response.json();
